@@ -49,5 +49,5 @@ JOIN games AS g
 ## join leagues table
 JOIN leagues as l
 	ON l.leagueID = g.leagueID
-ORDER BY RAND()
-LIMIT 10;
+ORDER BY g.gameID ASC
+LIMIT 20;
