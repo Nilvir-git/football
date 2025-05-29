@@ -135,3 +135,31 @@ WHERE season = 2020
 ORDER BY 
 	goals_scored DESC
     LIMIT 5;
+    
+SELECT *
+FROM (
+    SELECT 
+        ROW_NUMBER() OVER (PARTITION BY g.season ORDER BY SUM(a.goals) DESC) AS position,
+        g.season AS season,
+        l.name AS leagueName,
+        p.name AS playerName,
+        SUM(a.goals) AS goals_scored, 
+        SUM(a.shots) AS shots,
+        ROUND(SUM(a.goals)*100.0 / NULLIF(SUM(a.shots), 0), 2) AS goal_conversion_percent,
+        SUM(a.assists) AS assists,
+        SUM(a.yellowCard) AS yellowCard,
+        SUM(a.redCard) AS redCard
+    FROM appearances AS a
+    JOIN games AS g ON g.gameID = a.gameID
+    JOIN leagues AS l ON l.leagueID = a.leagueID
+    JOIN players AS p ON a.playerID = p.playerID
+    WHERE g.season BETWEEN 2014 AND 2020
+    GROUP BY 
+        a.playerID, 
+        p.name,
+        g.season, 
+        a.leagueID,
+        l.name
+) ranked
+WHERE position <= 5
+ORDER BY season, position;
