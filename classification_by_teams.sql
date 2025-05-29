@@ -1,7 +1,10 @@
 -- CLASSIFICATION BY SEASON / LEAGUE
+USE football;
 SELECT 
-	ROW_NUMBER() OVER (ORDER BY SUM(points)/COUNT(gameID) DESC) AS position,
+    season,
+    leagueName,
     teamName,
+    COUNT(gameID) as total_games, 
     SUM(CASE WHEN result = 'W' THEN 1 ELSE 0 END) AS won,
 	SUM(CASE WHEN result = 'D' THEN 1 ELSE 0 END) AS drawn,
 	SUM(CASE WHEN result = 'L' THEN 1 ELSE 0 END) AS lost,
@@ -15,8 +18,9 @@ SELECT
     ROUND(SUM(points)/COUNT(gameID),2) AS points_per_game,
     ROUND(SUM(ft_goals)/COUNT(gameID),2) AS GF_per_game,
     ROUND(SUM(xGoals)/COUNT(gameID),2) AS xG_per_game,
+    ROUND((SUM(ft_goals)/COUNT(gameID))/(SUM(xGoals)/COUNT(gameID)),2) AS GF_to_xG_per_game,
     ROUND(SUM(ft_goals_owned)/COUNT(gameID),2) AS GA_per_game,
-    ROUND(SUM(ft_goals) - SUM(ft_goals_owned),2)/COUNT(gameID) AS GD_per_game,
+    (SUM(ft_goals) - SUM(ft_goals_owned))/COUNT(gameID) AS GD_per_game,
     ROUND(SUM(shots)/COUNT(gameID),2) AS shots_per_game,
     ROUND(SUM(shotsOnTarget)/COUNT(gameID),2) AS shotsOnTarget_per_game,
     ROUND(SUM(corners)/COUNT(gameID),2) AS corners_per_game,
@@ -30,5 +34,6 @@ SELECT
     
         
 FROM SeasonLeagueResults
-GROUP BY teamName
+GROUP BY 1,2,3
 ORDER BY points_per_game DESC; 
+
