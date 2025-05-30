@@ -51,36 +51,3 @@ CREATE VIEW SeasonLeagueResults AS
 	## join leagues table
 	JOIN leagues as l
 		ON l.leagueID = g.leagueID;
-
-
-SELECT *
-FROM SeasonLeagueResults
-ORDER BY gameID ASC
-LIMIT 20;
-
-SELECT season, leagueName
-FROM SeasonLeagueResults;
-
-
--- CLASSIFICATION BY SEASON / LEAGUE
-
-SELECT 
-	ROW_NUMBER() OVER (ORDER BY SUM(points) DESC) AS position,
-    season,
-    teamName, 
-    SUM(points) AS total_points,
-    SUM(CASE WHEN result = 'W' THEN 1 ELSE 0 END) AS won,
-	SUM(CASE WHEN result = 'D' THEN 1 ELSE 0 END) AS drawn,
-	SUM(CASE WHEN result = 'L' THEN 1 ELSE 0 END) AS lost,
-    SUM(ft_goals) AS GF,
-    SUM(ft_goals_owned) AS GA,
-    SUM(ft_goals) - SUM(ft_goals_owned) AS GD
-FROM SeasonLeagueResults
-WHERE leagueName = 'Premier League' AND season = 2015
-GROUP BY season, teamName
-ORDER BY total_points DESC; 
-
-
-
-
-
